@@ -7,6 +7,7 @@ import Game from "./components/Game";
 import LeaderBoard from "./components/LeaderBoard";
 import { getLeaderBoard, firestore } from "./lib/firebaseUtils";
 import { useNetInfo } from "@react-native-community/netinfo";
+import Axios from "axios";
 
 export interface LeaderBoardDataType {
   date: number;
@@ -21,7 +22,11 @@ export default function App() {
   >([]);
 
   const updateLeaderboard = async () => {
-    const data = await getLeaderBoard();
+    const data = await Axios({
+      method: "GET",
+      url: `https://foj2g9tu5m.execute-api.ap-southeast-1.amazonaws.com/default/LeaderBoardGETV2`,
+    });
+
     setLeaderBoardData(data as any);
   };
 
@@ -29,10 +34,12 @@ export default function App() {
     updateLeaderboard();
   }, []);
 
-  const toLeaderBoards = (playerName: string, score: number) => {
-    firestore
-      .collection("LeaderBoard")
-      .add({ date: Date.now(), name: playerName, score: score });
+  const toLeaderBoards = async (playerName: string, score: number) => {
+    await Axios({
+      method: "POST",
+      url: `https://1jez6roic6.execute-api.ap-southeast-1.amazonaws.com/default/LeaderBoardLambda`,
+      data: { date: Date.now(), name: playerName, score: score },
+    });
 
     updateLeaderboard();
     setPlayerName("");
