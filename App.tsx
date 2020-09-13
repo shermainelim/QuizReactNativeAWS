@@ -22,12 +22,12 @@ export default function App() {
   >([]);
 
   const updateLeaderboard = async () => {
-    const data = await Axios({
+    const response = await Axios({
       method: "GET",
       url: `https://foj2g9tu5m.execute-api.ap-southeast-1.amazonaws.com/default/LeaderBoardGETV2`,
     });
 
-    setLeaderBoardData(data as any);
+    setLeaderBoardData(response.data as any);
   };
 
   useEffect(() => {
@@ -35,10 +35,21 @@ export default function App() {
   }, []);
 
   const toLeaderBoards = async (playerName: string, score: number) => {
+    // const axios = require("axios");
+    // await axios.post(
+    //   "https://1jez6roic6.execute-api.ap-southeast-1.amazonaws.com/default/LeaderBoardLambda",
+    //   {
+    //     date: 12345,
+    //     name: "Test2",
+    //     score: 4,
+    //   }
+    // );
+
     await Axios({
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       url: `https://1jez6roic6.execute-api.ap-southeast-1.amazonaws.com/default/LeaderBoardLambda`,
-      data: { date: Date.now(), name: playerName, score: score },
+      data: { date: Date.now().toString(), name: playerName, score: score },
     });
 
     updateLeaderboard();
